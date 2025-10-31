@@ -1,0 +1,30 @@
+services:
+    app:
+        build:
+            context: ./docker/app
+            dockerfile: Dockerfile
+        volumes:
+            - ./:/var/www/html
+            - /var/www/html/node_modules
+            - /var/www/html/.pnpm-store
+            - ./storage:/var/www/html/storage
+        ports:
+            - "8080:80" # Apache
+            - "5173:5173" # Vite (Reactのホットリロード)
+        depends_on:
+            - db
+
+    db:
+        image: mysql:8.0
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root
+        ports:
+            - "3306:3306"
+        volumes:
+            - db-data:/var/lib/mysql
+
+volumes:
+    db-data:
